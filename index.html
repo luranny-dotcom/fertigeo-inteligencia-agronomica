@@ -395,6 +395,20 @@ section{scroll-margin-top:104px;padding-top:30px}
   .rv{opacity:1;transform:none}
   section{padding-top:18px}
 }
+
+/* ═══ CONQUISTAS DA SAFRA (capa) ═══ */
+#sec-conquistas .sec-num{color:var(--olive-d)}
+.cq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.cq-card{background:var(--card);border:1px solid var(--line-2);border-left:3px solid var(--olive);border-radius:var(--r-sm);padding:14px 15px;box-shadow:var(--sh)}
+.cq-card.star{background:linear-gradient(135deg,#FDFDF9,var(--hib));border-left-color:var(--hi)}
+.cq-l{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:7px}
+.cq-v{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--ink);display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.cq-v .arr{color:var(--mut);font-weight:600;font-size:14px}
+.cq-chip{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:800;color:var(--hi);background:var(--hib);border-radius:20px;padding:2px 8px;margin-top:8px}
+.cq-cap{font-size:10px;color:var(--mut);margin-top:7px;line-height:1.45}
+.cq-note{font-size:10px;color:var(--mut);margin-top:11px;line-height:1.5;border-top:1px dashed var(--line);padding-top:9px}
+.g-delta{margin-top:5px;display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;color:var(--olive-l);background:rgba(162,179,76,.16);border:1px solid rgba(162,179,76,.35);border-radius:20px;padding:2px 9px}
+.g-delta:empty{display:none}
 </style>
 </head>
 <body>
@@ -441,6 +455,7 @@ section{scroll-margin-top:104px;padding-top:30px}
 <nav class=&quot;snav&quot; id=&quot;snav&quot;>
   <div class=&quot;snav-in&quot;>
     <a href=&quot;#sec-geral&quot; class=&quot;active&quot;>Visão geral</a>
+    <a href=&quot;#sec-conquistas&quot;>Conquistas</a>
     <a href=&quot;#sec-capitais&quot;>Potenciais</a>
     <a href=&quot;#sec-indices&quot;>Índices</a>
     <a href=&quot;#sec-talhoes&quot;>Talhões</a>
@@ -470,6 +485,7 @@ section{scroll-margin-top:104px;padding-top:30px}
         <div class=&quot;g-label&quot;>Soil Capital™</div>
         <div class=&quot;g-num tnum&quot; id=&quot;scN&quot;>—</div>
         <div class=&quot;g-den&quot;>/ 100</div>
+        <div class=&quot;g-delta&quot; id=&quot;gDelta&quot;></div>
       </div>
       <div class=&quot;g-scale&quot;><span>0</span><span>100</span></div>
     </div>
@@ -477,6 +493,22 @@ section{scroll-margin-top:104px;padding-top:30px}
 </header>
 
 <div class=&quot;wrap&quot; id=&quot;dashWrap&quot;>
+
+  <!-- 00 CONQUISTAS -->
+  <section id=&quot;sec-conquistas&quot; class=&quot;hide&quot;>
+    <div class=&quot;sec-h&quot;>
+      <div class=&quot;sec-num&quot;>★</div>
+      <div class=&quot;sec-tt&quot;>
+        <div class=&quot;sec-k&quot;><svg><use href=&quot;#i-chart&quot;/></svg>Prova de valor</div>
+        <div class=&quot;sec-t&quot;>Conquistas da Safra — 2024 → 2025</div>
+        <div class=&quot;sec-d&quot;>Evolução consolidada dos laudos de solo · 0–20 cm · média ponderada por área.</div>
+      </div>
+    </div>
+    <div class=&quot;sec-body&quot;>
+      <div class=&quot;cq-grid&quot; id=&quot;cqGrid&quot;></div>
+      <div class=&quot;cq-note&quot; id=&quot;cqNote&quot;></div>
+    </div>
+  </section>
 
   <!-- 01 CAPITAIS -->
   <section id=&quot;sec-capitais&quot;>
@@ -875,6 +907,37 @@ function countUp(el,target){
 }
 
 /* ═══ RENDER ════════════════════════════════════════════════════════ */
+
+/* ═══ CONQUISTAS DA SAFRA (São José · laudos 2024 vs 2025) ═══════════
+   Derivação: média por talhão dos pontos 00-10 + 10-20 cm de cada laudo,
+   ponderada pela área. Talhões presentes nos DOIS anos: TH01–TH04 e TH08.
+   Score 2024 = motor cSC com química do laudo 2024 e físico-hídrica
+   constante (medição única). Valores conferidos contra D24/D25. */
+const CONQ={fazenda:'saojose',anoA:2024,anoB:2025,itens:[
+  {l:'Soil Capital™ Score',a:'34',b:'45',chip:'▲ +11 pts',cap:'Score 2024 estimado com físico-hídrica constante',star:true},
+  {l:'pH do solo',a:'4,9',b:'5,5',chip:'▲ +0,55',cap:'Saída da faixa crítica de acidez'},
+  {l:'Saturação por bases (V%)',a:'56%',b:'67%',chip:'▲ +11 p.p.',cap:'Mais nutrientes disponíveis para a planta'},
+  {l:'Matéria orgânica',a:'24,8',b:'39,8 g/dm³',chip:'▲ +61%',cap:'Patrimônio biológico e de carbono em construção'},
+],nota:'Cálculo: talhões TH01–TH04 e TH08 (presentes nos laudos dos dois anos) · profundidade 0–20 cm · média ponderada pela área de cada talhão · Fertigeo Inteligência no Agronegócio.',
+gdelta:'▲ +11 pts vs 2024'};
+function renderConquistas(){
+  const sec=document.getElementById('sec-conquistas');
+  const gd=document.getElementById('gDelta');
+  if(!sec)return;
+  const show=DB.ativa===CONQ.fazenda;
+  sec.classList.toggle('hide',!show);
+  if(gd)gd.textContent=show?CONQ.gdelta:'';
+  if(!show)return;
+  document.getElementById('cqGrid').innerHTML=CONQ.itens.map(it=>`
+    <div class=&quot;cq-card${it.star?' star':''}&quot;>
+      <div class=&quot;cq-l&quot;>${it.l}</div>
+      <div class=&quot;cq-v tnum&quot;>${it.a} <span class=&quot;arr&quot;>→</span> ${it.b}</div>
+      <div class=&quot;cq-chip&quot;>${it.chip}</div>
+      <div class=&quot;cq-cap&quot;>${it.cap}</div>
+    </div>`).join('');
+  document.getElementById('cqNote').textContent=CONQ.nota;
+}
+
 function render(){
   const f=fz();
   document.getElementById('heroEb').textContent=(f.cultura||'Lavoura')+' · Safra atual';
@@ -886,6 +949,7 @@ function render(){
   if(f.municipio)chips.push(`<span class=&quot;hm-chip&quot;>${f.municipio}</span>`);
   document.getElementById('heroMeta').innerHTML=chips.join('');
   document.getElementById('footFz').textContent=f.nome+' · '+areaTotal().toLocaleString('pt-BR')+' ha';
+  renderConquistas();
 
   const tem=Object.keys(T()).length>0;
   document.getElementById('dashWrap').classList.toggle('hide',!tem);
