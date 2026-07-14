@@ -2793,7 +2793,7 @@ function buildRec(){
       <span class=&quot;pill pill-y&quot; style=&quot;margin-left:auto&quot;>3 ações prioritárias</span>
     </div>
     <div class=&quot;ac-body&quot; id=&quot;pa-quim&quot;>
-      <div class=&quot;nota&quot;>📈 pH médio subiu de 4,9 para 5,9 e V% de 66% para 83% entre 2024 e 2025 — manutenção corretiva é prioridade para consolidar os ganhos.</div>
+      <div class=&quot;nota&quot;>📈 pH médio subiu de 4,9 para 5,5 e V% de 56% para 67% entre os laudos 2024 e 2025 (0–20 cm, média ponderada por área) — a correção está funcionando; manutenção é prioridade para consolidar os ganhos e levar o V% a ≥ 70%.</div>
       <table class=&quot;dt&quot; style=&quot;margin-bottom:16px&quot;>
         <thead><tr><th style=&quot;text-align:left&quot;>Ação</th><th>Talhões</th><th>Parâmetro</th><th>Valor atual</th><th>Meta</th><th>Recomendação</th><th>Prioridade</th></tr></thead>
         <tbody>
@@ -2842,19 +2842,87 @@ function buildRec(){
     </div>
   </div>
 
+  <p class=&quot;sc&quot;>💰 Orçamento do Plano — 2026</p>
+  <div class=&quot;nota&quot;>Área e custo por hectare são <b>editáveis</b> — valores pré-preenchidos são estimativas de referência; ajuste à cotação local e às glebas reais. Ações de manejo entram com custo zero; itens &quot;projeto&quot; ficam em branco até definição. As edições ficam salvas neste navegador.</div>
+  <table class=&quot;dt&quot; style=&quot;margin-bottom:8px&quot;>
+    <thead><tr><th style=&quot;text-align:left&quot;>Ação</th><th>Área (ha)</th><th>Custo (R$/ha)</th><th style=&quot;text-align:right&quot;>Investimento (R$)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style=&quot;text-align:left&quot;><b>Manutenção de Calagem</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Química · 1B, 4</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_q1&quot; value=&quot;777&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_q1&quot; value=&quot;210&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_q1&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Adubação Fosfatada</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Química · 1A, 1B, 4</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_q2&quot; value=&quot;777&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_q2&quot; value=&quot;550&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_q2&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Adubação Potássica</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Química · Todos</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_q3&quot; value=&quot;1822&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_q3&quot; value=&quot;300&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_q3&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Controle de Tráfego em Solo Argiloso</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Física · Todos</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_f1&quot; value=&quot;1822&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_f1&quot; value=&quot;0&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_f1&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Monitoramento de Densidade Global</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Física · Todos</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_f2&quot; value=&quot;1822&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_f2&quot; value=&quot;12&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_f2&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Manutenção de Palhada</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Física · Todos</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_f3&quot; value=&quot;1822&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_f3&quot; value=&quot;0&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_f3&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Inoculação com benéficos (Trichoderma + Bacillus)</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Biológica · IQS Bio < 60</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_b1&quot; value=&quot;1822&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_b1&quot; value=&quot;60&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_b1&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Banco de microrganismos nativos</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Biológica · projeto</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_b2&quot; value=&quot;0&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_b2&quot; value=&quot;0&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_b2&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+<tr>
+        <td style=&quot;text-align:left&quot;><b>Nutrição orgânica — composto nas reformas</b><br><span style=&quot;font-size:10px;color:#8E8C82&quot;>Biológica · reformas</span></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_a_b3&quot; value=&quot;0&quot; style=&quot;width:82px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td><input type=&quot;number&quot; step=&quot;1&quot; min=&quot;0&quot; id=&quot;orc_c_b3&quot; value=&quot;0&quot; style=&quot;width:92px;padding:5px 7px;border:1px solid #E7E5DD;border-radius:6px;font-family:inherit;font-size:12px;text-align:right&quot; oninput=&quot;paOrc()&quot;></td>
+        <td id=&quot;orc_t_b3&quot; style=&quot;font-weight:700;text-align:right&quot;>—</td>
+      </tr>
+      <tr style=&quot;background:#F2F1EC&quot;>
+        <td style=&quot;text-align:left;font-weight:800&quot;>TOTAL</td><td></td><td></td>
+        <td id=&quot;orc_total&quot; style=&quot;font-weight:800;text-align:right;color:#00313C&quot;>—</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class=&quot;nota&quot; id=&quot;orc_resumo&quot; style=&quot;background:#EDF4E1;border-color:#CBDCA8&quot;></div>
+
   <p class=&quot;sc&quot;>Indicadores de monitoramento</p>
   <table class=&quot;dt&quot; style=&quot;margin-bottom:16px&quot;>
     <thead><tr><th>#</th><th style=&quot;text-align:left&quot;>Indicador</th><th>2024</th><th>2025</th><th>Meta</th><th>Tendência</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td>pH médio 0–10cm</td><td style=&quot;background:#FCEBEB;color:#A32D2D&quot;>4,9</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>5,9</td><td>≥ 6,0</td><td>📈 +1,0</td></tr>
-      <tr><td>2</td><td>V% médio 0–10cm</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>66%</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>83%</td><td>≥ 70%</td><td>📈 +17pp</td></tr>
-      <tr><td>3</td><td>MOS médio 0–10cm (g/dm³)</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>30</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>54</td><td>≥ 30</td><td>📈 +24</td></tr>
-      <tr><td>4</td><td>Ca médio 0–10cm (cmolc)</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>6,8</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>8,3</td><td>≥ 4,0</td><td>📈 +1,5</td></tr>
-      <tr><td>5</td><td>Mg médio 0–10cm (cmolc)</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>3,0</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>3,5</td><td>≥ 0,8</td><td>📈 +0,5</td></tr>
-      <tr><td>6</td><td>P Meh.3 médio 0–10cm (mg/kg)</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>31,7</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>19,4</td><td>≥ 30</td><td>📉 -12,3</td></tr>
-      <tr><td>7</td><td>K médio 0–10cm (cmolc)</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>0,30</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>0,26</td><td>≥ 0,30</td><td>📉 -0,04</td></tr>
+      <tr><td>1</td><td>pH médio 0–20cm</td><td style=&quot;background:#FCEBEB;color:#A32D2D&quot;>4,9</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>5,5</td><td>≥ 6,0</td><td>📈 +0,55</td></tr>
+      <tr><td>2</td><td>V% médio 0–20cm</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>56%</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>67%</td><td>≥ 70%</td><td>📈 +11pp</td></tr>
+      <tr><td>3</td><td>MOS médio 0–20cm (g/dm³)</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>24,8</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>39,8</td><td>≥ 30</td><td>📈 +15,1</td></tr>
+      <tr><td>4</td><td>Ca médio 0–20cm (cmolc)</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>4,7</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>5,6</td><td>≥ 4,0</td><td>📈 +0,9</td></tr>
+      <tr><td>5</td><td>Mg médio 0–20cm (cmolc)</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>2,0</td><td style=&quot;background:#EAF3DE;color:#3B6D11&quot;>2,2</td><td>≥ 0,8</td><td>📈 +0,2</td></tr>
+      <tr><td>6</td><td>P Meh.3 mediana 0–20cm (mg/kg)</td><td style=&quot;background:#FCEBEB;color:#A32D2D&quot;>13,1</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>18,4</td><td>≥ 30</td><td>📈 +5,3</td></tr>
+      <tr><td>7</td><td>K médio 0–20cm (cmolc)</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>0,25</td><td style=&quot;background:#FEF3E2;color:#854F0B&quot;>0,22</td><td>≥ 0,30</td><td>📉 -0,03</td></tr>
     </tbody>
   </table>
+  <div class=&quot;nota&quot;>Base de cálculo: camadas 00–10 + 10–20 cm, média ponderada pela área dos talhões TH01–TH04 e TH08 (presentes nos laudos 2024 e 2025) — mesma base da seção Conquistas do Soil Capital™. P Mehlich-3 apresentado em mediana: pontos de P muito elevado no TH08 distorcem a média.</div>
   <div class=&quot;footer&quot;>Fertigeo Inteligência no Agronegócio &amp;nbsp;·&amp;nbsp; Fazenda São José &amp;nbsp;·&amp;nbsp; Fernando Orlando &amp;nbsp;·&amp;nbsp; Laudos 2024–2025</div>
 </div>
 </div>
@@ -4128,6 +4196,33 @@ function buildPCA(){
   document.getElementById('pcaLoad2').innerHTML = top5_2.map(([n,v])=>loadBar(n,v)).join('');
 }
 
+</script>
+<script>
+const ORC_IDS=['q1','q2','q3','f1','f2','f3','b1','b2','b3'];
+const ORC_KEY='fertigeo_pa_orcamento_v1';
+function fmtBR(v){return v.toLocaleString('pt-BR',{maximumFractionDigits:0});}
+function paOrc(){
+  let total=0, st={};
+  ORC_IDS.forEach(id=>{
+    const a=parseFloat(document.getElementById('orc_a_'+id).value)||0;
+    const c=parseFloat(document.getElementById('orc_c_'+id).value)||0;
+    const t=a*c; total+=t; st[id]=[a,c];
+    document.getElementById('orc_t_'+id).textContent = t>0 ? 'R$ '+fmtBR(t) : '—';
+  });
+  document.getElementById('orc_total').textContent='R$ '+fmtBR(total);
+  const porHa=total/1822;
+  document.getElementById('orc_resumo').innerHTML='<b>Investimento recomendado 2026: R$ '+fmtBR(total)+'</b> · R$ '+fmtBR(porHa)+'/ha sobre os 1.822 ha da fazenda. Corrigir TH02 e TH03 primeiro concentra o investimento onde o quadrante Solo × Produtividade indica o maior retorno por real aplicado.';
+  try{localStorage.setItem(ORC_KEY,JSON.stringify(st));}catch(e){}
+}
+(function(){
+  try{
+    const st=JSON.parse(localStorage.getItem(ORC_KEY)||'null');
+    if(st){ORC_IDS.forEach(id=>{
+      if(st[id]){document.getElementById('orc_a_'+id).value=st[id][0];document.getElementById('orc_c_'+id).value=st[id][1];}
+    });}
+  }catch(e){}
+  paOrc();
+})();
 </script>
 </body>
 </html>
