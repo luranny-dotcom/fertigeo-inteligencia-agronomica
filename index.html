@@ -578,7 +578,7 @@ section{scroll-margin-top:104px;padding-top:30px}
       <div class=&quot;sec-tt&quot;>
         <div class=&quot;sec-k&quot;><svg><use href=&quot;#i-chart&quot;/></svg>Diagnóstico cruzado</div>
         <div class=&quot;sec-t&quot;>Solo × Produtividade</div>
-        <div class=&quot;sec-d&quot;>Cada talhão posicionado pelo Soil Capital™ Score e pela produtividade real. As linhas marcam a média ponderada da fazenda — os quadrantes dizem onde proteger, investigar e corrigir.</div>
+        <div class=&quot;sec-d&quot;>Cada talhão posicionado pelo Soil Capital™ Score (laudo mais recente) e pela produtividade da safra selecionada. As linhas marcam a média ponderada da fazenda — os quadrantes dizem onde proteger, investigar e corrigir.</div>
       </div>
     </div>
     <div class=&quot;sec-body&quot;>
@@ -587,6 +587,7 @@ section{scroll-margin-top:104px;padding-top:30px}
           <button class=&quot;on&quot; data-c=&quot;soja&quot; onclick=&quot;sxpCultura('soja')&quot;>Soja (sc/ha)</button>
           <button data-c=&quot;milho&quot; onclick=&quot;sxpCultura('milho')&quot;>Milho (sc/ha)</button>
         </div>
+        <div class=&quot;sxp-tg&quot; id=&quot;sxpSafraTg&quot;></div>
       </div>
       <div class=&quot;sxp-chart&quot;><canvas id=&quot;sxpCanvas&quot;></canvas></div>
       <div class=&quot;sxp-insight hide&quot; id=&quot;sxpInsight&quot;></div>
@@ -980,7 +981,22 @@ function renderConquistas(){
 
 
 /* ═══ SOLO × PRODUTIVIDADE (quadrantes) ══════════════════════════════ */
-let SXP_CULT='soja', SXP_CHART=null;
+let SXP_CULT='soja', SXP_CHART=null, SXP_SAFRA='__RECENTE__';
+/* Histórico de produtividade por safra (fonte: registros de colheita da fazenda,
+   os mesmos do módulo Análises de Solo). t=talhão, s=safra, c=cultura, p=sc/ha */
+const SXP_PROD=[{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2024/2024&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:172.01},{&quot;t&quot;:&quot;TH08&quot;,&quot;s&quot;:&quot;2024/2024&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:157.5},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2024/2024&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:164.32},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2024/2024&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:129.32},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2022/2022&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:171.85},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2022/2022&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:153.66},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2022/2022&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:147.81},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2023/2023&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:128.84},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2023/2023&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:130.63},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2023/2023&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:161.15},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2023/2023&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:178.74},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2023/2024&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:14.15},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2023/2024&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:31.35},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2023/2024&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:72.62},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2022/2023&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:79.63},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2022/2023&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:78.21},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2022/2023&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:72.4},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2022/2023&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:80.73},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2022/2023&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:70.96},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2021/2022&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:79.21},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2021/2022&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:83.8},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2021/2022&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:77.94},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2021/2022&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:80.74},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2024/2025&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:74.97},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2024/2025&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:84.11},{&quot;t&quot;:&quot;TH07&quot;,&quot;s&quot;:&quot;2024/2025&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:83.2},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2024/2025&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:91.56},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2024/2025&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:96.6},{&quot;t&quot;:&quot;TH08&quot;,&quot;s&quot;:&quot;2024/2025&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:90.51},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2025/2025&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:154.52},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2025/2025&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:164.71},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2025/2025&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:169.3},{&quot;t&quot;:&quot;TH07&quot;,&quot;s&quot;:&quot;2025/2025&quot;,&quot;c&quot;:&quot;milho&quot;,&quot;p&quot;:122.37},{&quot;t&quot;:&quot;TH01&quot;,&quot;s&quot;:&quot;2025/2026&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:71.1},{&quot;t&quot;:&quot;TH02&quot;,&quot;s&quot;:&quot;2025/2026&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:69.02},{&quot;t&quot;:&quot;TH03&quot;,&quot;s&quot;:&quot;2025/2026&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:70.19},{&quot;t&quot;:&quot;TH04&quot;,&quot;s&quot;:&quot;2025/2026&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:82.22},{&quot;t&quot;:&quot;TH07&quot;,&quot;s&quot;:&quot;2025/2026&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:81.87},{&quot;t&quot;:&quot;TH08&quot;,&quot;s&quot;:&quot;2025/2026&quot;,&quot;c&quot;:&quot;soja&quot;,&quot;p&quot;:83.0}];
+function sxpSafras(cult){
+  return [...new Set(SXP_PROD.filter(r=>r.c===cult).map(r=>r.s))].sort().reverse();
+}
+function sxpProdDe(tal,cult,safra){
+  if(safra==='media'){
+    const rs=SXP_PROD.filter(r=>r.t===tal&amp;&amp;r.c===cult);
+    return rs.length?rs.reduce((s,r)=>s+r.p,0)/rs.length:null;
+  }
+  const r=SXP_PROD.find(r=>r.t===tal&amp;&amp;r.c===cult&amp;&amp;r.s===safra);
+  return r?r.p:null;
+}
+function sxpSafra(s){SXP_SAFRA=s;renderSoloProd();}
 const SXP_Q={
   cons:{c:'#3B6D11',t:'Consolidado',d:'Solo e produtividade acima da média — proteger o padrão de manejo.'},
   ret:{c:'#3B8FA8',t:'Potencial retido',d:'Solo acima da média, colheita abaixo — o limitante está fora do solo (população, sanidade, água). Investigar.'},
@@ -994,7 +1010,12 @@ function renderSoloProd(){
   if(!cv)return;
   const temChart=typeof Chart!=='undefined';
   document.querySelector('.sxp-chart').classList.toggle('hide',!temChart);
-  const ts=Object.entries(T()).map(([n,t])=>({n,area:+t.area||0,score:cSC(t),prod:+t[SXP_CULT]||null})).filter(t=>t.prod&amp;&amp;t.area);
+  const safras=sxpSafras(SXP_CULT);
+  if(SXP_SAFRA==='__RECENTE__'||(SXP_SAFRA!=='media'&amp;&amp;!safras.includes(SXP_SAFRA)))SXP_SAFRA=safras[0]||'media';
+  const tg=document.getElementById('sxpSafraTg');
+  if(tg)tg.innerHTML=safras.map(s=>`<button class=&quot;${SXP_SAFRA===s?'on':''}&quot; onclick=&quot;sxpSafra('${s}')&quot;>${s}</button>`).join('')
+    +`<button class=&quot;${SXP_SAFRA==='media'?'on':''}&quot; onclick=&quot;sxpSafra('media')&quot;>Média histórica</button>`;
+  const ts=Object.entries(T()).map(([n,t])=>({n,area:+t.area||0,score:cSC(t),prod:sxpProdDe(n,SXP_CULT,SXP_SAFRA)})).filter(t=>t.prod&amp;&amp;t.area);
   const sec=document.getElementById('sec-solxprod');
   if(ts.length<2){sec.classList.add('hide');return;}
   sec.classList.remove('hide');
@@ -1035,7 +1056,7 @@ function renderSoloProd(){
         label:c=>{const p=c.raw;return[` ${p.n} · ${SXP_Q[p.q].t}`,` Score ${p.x} · ${p.y} sc/ha · ${p.area} ha`];}}}},
       scales:{
         x:{min:xMin,max:xMax,title:{display:true,text:'Soil Capital™ Score',font:{family:'Outfit',weight:'700',size:10}},grid:{color:'#F0EEE6'}},
-        y:{title:{display:true,text:(SXP_CULT==='soja'?'Soja':'Milho')+' — sc/ha',font:{family:'Outfit',weight:'700',size:10}},grid:{color:'#F0EEE6'},
+        y:{title:{display:true,text:(SXP_CULT==='soja'?'Soja':'Milho')+' — sc/ha · '+(SXP_SAFRA==='media'?'média histórica':'safra '+SXP_SAFRA),font:{family:'Outfit',weight:'700',size:10}},grid:{color:'#F0EEE6'},
            suggestedMin:Math.min(...ys)-yPad,suggestedMax:Math.max(...ys)+yPad}
       }},
     plugins:[quadPlugin]});
@@ -1053,7 +1074,8 @@ function renderSoloProd(){
   const box=document.getElementById('sxpInsight');
   if(risco.length){
     const ha=risco.reduce((s,p)=>s+p.area,0);
-    box.innerHTML=`<b>Leitura Fertigeo:</b> ${risco.map(p=>p.n).join(' e ')} (${ha.toLocaleString('pt-BR')} ha) colhem acima da média da fazenda com solo abaixo da média — essa produtividade está apoiada em fertilidade que está sendo consumida. Sem reposição, ela não se sustenta nas próximas safras.`;
+    const ref=SXP_SAFRA==='media'?'na média histórica':'na safra '+SXP_SAFRA;
+    box.innerHTML=`<b>Leitura Fertigeo:</b> ${risco.map(p=>p.n).join(' e ')} (${ha.toLocaleString('pt-BR')} ha) colhem acima da média da fazenda ${ref} com solo abaixo da média — essa produtividade está apoiada em fertilidade que está sendo consumida. Sem reposição, ela não se sustenta nas próximas safras.`;
     box.classList.remove('hide');
   }else box.classList.add('hide');
 }
