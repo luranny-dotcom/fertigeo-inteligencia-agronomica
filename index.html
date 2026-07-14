@@ -409,6 +409,21 @@ section{scroll-margin-top:104px;padding-top:30px}
 .cq-note{font-size:10px;color:var(--mut);margin-top:11px;line-height:1.5;border-top:1px dashed var(--line);padding-top:9px}
 .g-delta{margin-top:5px;display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;color:var(--olive-l);background:rgba(162,179,76,.16);border:1px solid rgba(162,179,76,.35);border-radius:20px;padding:2px 9px}
 .g-delta:empty{display:none}
+
+/* ═══ SOLO × PRODUTIVIDADE ═══ */
+.sxp-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.sxp-tg{display:inline-flex;background:var(--beige);border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
+.sxp-tg button{font-family:inherit;font-size:11.5px;font-weight:700;border:none;background:transparent;color:var(--ink-2);padding:6px 14px;border-radius:6px;cursor:pointer}
+.sxp-tg button.on{background:var(--teal);color:#fff}
+.sxp-chart{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-sm);box-shadow:var(--sh);padding:16px 14px 8px;height:390px;position:relative}
+.sxp-insight{margin-top:12px;background:var(--mdb);border:1px solid #EBD9B8;border-left:3px solid var(--md);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;line-height:1.55;color:var(--ink)}
+.sxp-insight b{color:var(--md)}
+.sxp-quads{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+.sxp-q{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:11px 13px;box-shadow:var(--sh)}
+.sxp-q .qt{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.sxp-q .qt::before{content:&quot;&quot;;width:8px;height:8px;border-radius:2px;background:var(--qc)}
+.sxp-q .qtl{font-size:12.5px;font-weight:700;color:var(--ink);min-height:16px}
+.sxp-q .qd{font-size:10.5px;color:var(--mut);margin-top:5px;line-height:1.45}
 </style>
 </head>
 <body>
@@ -459,6 +474,7 @@ section{scroll-margin-top:104px;padding-top:30px}
     <a href=&quot;#sec-capitais&quot;>Potenciais</a>
     <a href=&quot;#sec-indices&quot;>Índices</a>
     <a href=&quot;#sec-talhoes&quot;>Talhões</a>
+    <a href=&quot;#sec-solxprod&quot;>Solo × Prod.</a>
     <a href=&quot;#sec-ia&quot;>Consultor IA</a>
     <a href=&quot;#sec-carbono&quot;>Carbono</a>
     <a href=&quot;#sec-biomassa&quot;>Biomassa</a>
@@ -554,6 +570,30 @@ section{scroll-margin-top:104px;padding-top:30px}
   </section>
 
   <!-- 04 IA -->
+  
+  <!-- SOLO × PRODUTIVIDADE -->
+  <section id=&quot;sec-solxprod&quot;>
+    <div class=&quot;sec-h&quot;>
+      <div class=&quot;sec-num&quot;>⇄</div>
+      <div class=&quot;sec-tt&quot;>
+        <div class=&quot;sec-k&quot;><svg><use href=&quot;#i-chart&quot;/></svg>Diagnóstico cruzado</div>
+        <div class=&quot;sec-t&quot;>Solo × Produtividade</div>
+        <div class=&quot;sec-d&quot;>Cada talhão posicionado pelo Soil Capital™ Score e pela produtividade real. As linhas marcam a média ponderada da fazenda — os quadrantes dizem onde proteger, investigar e corrigir.</div>
+      </div>
+    </div>
+    <div class=&quot;sec-body&quot;>
+      <div class=&quot;sxp-bar&quot;>
+        <div class=&quot;sxp-tg&quot; id=&quot;sxpTg&quot;>
+          <button class=&quot;on&quot; data-c=&quot;soja&quot; onclick=&quot;sxpCultura('soja')&quot;>Soja (sc/ha)</button>
+          <button data-c=&quot;milho&quot; onclick=&quot;sxpCultura('milho')&quot;>Milho (sc/ha)</button>
+        </div>
+      </div>
+      <div class=&quot;sxp-chart&quot;><canvas id=&quot;sxpCanvas&quot;></canvas></div>
+      <div class=&quot;sxp-insight hide&quot; id=&quot;sxpInsight&quot;></div>
+      <div class=&quot;sxp-quads&quot; id=&quot;sxpQuads&quot;></div>
+    </div>
+  </section>
+
   <section id=&quot;sec-ia&quot;>
     <div class=&quot;sec-h&quot;>
       <div class=&quot;sec-num&quot;>04</div>
@@ -938,6 +978,86 @@ function renderConquistas(){
   document.getElementById('cqNote').textContent=CONQ.nota;
 }
 
+
+/* ═══ SOLO × PRODUTIVIDADE (quadrantes) ══════════════════════════════ */
+let SXP_CULT='soja', SXP_CHART=null;
+const SXP_Q={
+  cons:{c:'#3B6D11',t:'Consolidado',d:'Solo e produtividade acima da média — proteger o padrão de manejo.'},
+  ret:{c:'#3B8FA8',t:'Potencial retido',d:'Solo acima da média, colheita abaixo — o limitante está fora do solo (população, sanidade, água). Investigar.'},
+  risco:{c:'#9A6308',t:'Produtividade em risco',d:'Produz acima da média com solo abaixo da média — colheita sustentada por consumo de fertilidade. Repor antes que caia.'},
+  prio:{c:'#A32D2D',t:'Prioridade máxima',d:'Solo e produtividade abaixo da média — maior retorno por real investido em correção.'}
+};
+function sxpCultura(c){SXP_CULT=c;document.querySelectorAll('#sxpTg button').forEach(b=>b.classList.toggle('on',b.dataset.c===c));renderSoloProd();}
+function sxpQuad(sAcima,pAcima){return pAcima?(sAcima?'cons':'risco'):(sAcima?'ret':'prio');}
+function renderSoloProd(){
+  const cv=document.getElementById('sxpCanvas');
+  if(!cv)return;
+  const temChart=typeof Chart!=='undefined';
+  document.querySelector('.sxp-chart').classList.toggle('hide',!temChart);
+  const ts=Object.entries(T()).map(([n,t])=>({n,area:+t.area||0,score:cSC(t),prod:+t[SXP_CULT]||null})).filter(t=>t.prod&amp;&amp;t.area);
+  const sec=document.getElementById('sec-solxprod');
+  if(ts.length<2){sec.classList.add('hide');return;}
+  sec.classList.remove('hide');
+  const at=ts.reduce((s,t)=>s+t.area,0);
+  const mS=ts.reduce((s,t)=>s+t.score*t.area,0)/at;
+  const mP=ts.reduce((s,t)=>s+t.prod*t.area,0)/at;
+  const maxA=Math.max(...ts.map(t=>t.area));
+  const pts=ts.map(t=>{
+    const q=sxpQuad(t.score>=mS,t.prod>=mP);
+    return {x:t.score,y:t.prod,n:t.n,area:t.area,q,r:7+(t.area/maxA)*12};
+  });
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+  const xMin=Math.max(0,Math.floor(Math.min(...xs)-9)),xMax=Math.min(100,Math.ceil(Math.max(...xs)+9));
+  const yPad=(Math.max(...ys)-Math.min(...ys))*0.22||10;
+  const quadPlugin={id:'quad',beforeDatasetsDraw(ch){
+    const {ctx,chartArea:a,scales:{x,y}}=ch;
+    const px=x.getPixelForValue(mS),py=y.getPixelForValue(mP);
+    ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle='#B9B6A8';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px,a.top);ctx.lineTo(px,a.bottom);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(a.left,py);ctx.lineTo(a.right,py);ctx.stroke();
+    ctx.setLineDash([]);ctx.font='600 9px Outfit,Arial';ctx.fillStyle='#8E8C82';
+    ctx.textAlign='left';ctx.fillText('média da fazenda',px+5,a.top+11);
+    ctx.restore();
+  },afterDatasetsDraw(ch){
+    const {ctx}=ch;const meta=ch.getDatasetMeta(0);
+    ctx.save();ctx.font='700 10.5px Outfit,Arial';ctx.textAlign='center';ctx.fillStyle='#14201E';
+    meta.data.forEach((el,i)=>{const p=pts[i];ctx.fillText(p.n,el.x,el.y-p.r-6);});
+    ctx.restore();
+  }};
+  if(SXP_CHART){SXP_CHART.destroy();SXP_CHART=null;}
+  if(temChart)SXP_CHART=new Chart(cv,{type:'scatter',
+    data:{datasets:[{data:pts,
+      backgroundColor:pts.map(p=>SXP_Q[p.q].c+'CC'),
+      borderColor:pts.map(p=>SXP_Q[p.q].c),borderWidth:1.5,
+      pointRadius:pts.map(p=>p.r),pointHoverRadius:pts.map(p=>p.r+2)}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:RM?false:{duration:500},
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:c=>{const p=c.raw;return[` ${p.n} · ${SXP_Q[p.q].t}`,` Score ${p.x} · ${p.y} sc/ha · ${p.area} ha`];}}}},
+      scales:{
+        x:{min:xMin,max:xMax,title:{display:true,text:'Soil Capital™ Score',font:{family:'Outfit',weight:'700',size:10}},grid:{color:'#F0EEE6'}},
+        y:{title:{display:true,text:(SXP_CULT==='soja'?'Soja':'Milho')+' — sc/ha',font:{family:'Outfit',weight:'700',size:10}},grid:{color:'#F0EEE6'},
+           suggestedMin:Math.min(...ys)-yPad,suggestedMax:Math.max(...ys)+yPad}
+      }},
+    plugins:[quadPlugin]});
+  /* cards de leitura por quadrante */
+  const grid=document.getElementById('sxpQuads');
+  grid.innerHTML=Object.entries(SXP_Q).map(([k,q])=>{
+    const list=pts.filter(p=>p.q===k);
+    const ha=list.reduce((s,p)=>s+p.area,0);
+    return`<div class=&quot;sxp-q&quot; style=&quot;--qc:${q.c}&quot;>
+      <div class=&quot;qt&quot; style=&quot;color:${q.c}&quot;>${q.t}</div>
+      <div class=&quot;qtl&quot;>${list.length?list.map(p=>p.n).join(' · ')+' — '+ha.toLocaleString('pt-BR')+' ha':'—'}</div>
+      <div class=&quot;qd&quot;>${q.d}</div></div>`;}).join('');
+  /* insight dinâmico do quadrante de risco */
+  const risco=pts.filter(p=>p.q==='risco');
+  const box=document.getElementById('sxpInsight');
+  if(risco.length){
+    const ha=risco.reduce((s,p)=>s+p.area,0);
+    box.innerHTML=`<b>Leitura Fertigeo:</b> ${risco.map(p=>p.n).join(' e ')} (${ha.toLocaleString('pt-BR')} ha) colhem acima da média da fazenda com solo abaixo da média — essa produtividade está apoiada em fertilidade que está sendo consumida. Sem reposição, ela não se sustenta nas próximas safras.`;
+    box.classList.remove('hide');
+  }else box.classList.add('hide');
+}
+
 function render(){
   const f=fz();
   document.getElementById('heroEb').textContent=(f.cultura||'Lavoura')+' · Safra atual';
@@ -950,6 +1070,7 @@ function render(){
   document.getElementById('heroMeta').innerHTML=chips.join('');
   document.getElementById('footFz').textContent=f.nome+' · '+areaTotal().toLocaleString('pt-BR')+' ha';
   renderConquistas();
+  renderSoloProd();
 
   const tem=Object.keys(T()).length>0;
   document.getElementById('dashWrap').classList.toggle('hide',!tem);
