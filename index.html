@@ -3892,6 +3892,7 @@ function buildProd(){
   });
   tbl+='</tbody></table>';
   document.getElementById('prTable').innerHTML=tbl;
+  buildCorrProd();
 }
 
 
@@ -3947,7 +3948,7 @@ function buildCorrProd(){
     }
     rEl.innerHTML = `<b style=&quot;color:#A32D2D&quot;>Sem dados suficientes.</b> ${motivo}`;
     if(window.__corrChart){ window.__corrChart.destroy(); window.__corrChart=null; }
-    const cv=document.getElementById('sProdCorr');
+    const cv=document.getElementById('stProdScatter');
     if(cv){ const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
     buildProdRankCorr(cultura);
     return;
@@ -3986,7 +3987,7 @@ function buildCorrProd(){
   }
 
   if(window.__corrChart){ window.__corrChart.destroy(); }
-  window.__corrChart = new Chart(document.getElementById('sProdCorr'),{
+  window.__corrChart = new Chart(document.getElementById('stProdScatter'),{
     type:'scatter',
     data:{datasets},
     options:{
