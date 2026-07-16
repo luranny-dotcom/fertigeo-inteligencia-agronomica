@@ -1601,6 +1601,12 @@ table.dt td:first-child{text-align:left;background:#f8f8f8;color:#333}
 
 
 /* análise exportação × produtividade */
+
+.fol-ana-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.fol-ana-seg{display:inline-flex;align-items:center;gap:6px;background:#F2F1EC;border:1px solid #E7E5DD;border-radius:8px;padding:3px 3px 3px 10px}
+.fol-ana-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E8C82;margin-right:2px}
+.fol-ana-seg button{font-family:inherit;font-size:11.5px;font-weight:700;border:none;background:transparent;color:#4A554F;padding:6px 12px;border-radius:6px;cursor:pointer}
+.fol-ana-seg button.on{background:#00313C;color:#fff}
 .fol-ana-nut{display:inline-flex;background:#F2F1EC;border:1px solid #E7E5DD;border-radius:8px;padding:3px;gap:2px;margin-bottom:14px}
 .fol-ana-nut button{font-family:inherit;font-size:11.5px;font-weight:700;border:none;background:transparent;color:#4A554F;padding:6px 13px;border-radius:6px;cursor:pointer}
 .fol-ana-nut button.on{background:#00313C;color:#fff}
@@ -3263,12 +3269,14 @@ function folExport(){
 
 /* ═══ ANÁLISE EXPORTAÇÃO × PRODUTIVIDADE ═══ */
 let FOL_ANA_NUT='n';
+let FOL_ANA_CULT=null;
 const FOL_ANA_CHARTS={};;
 function folAnaSetNut(n){FOL_ANA_NUT=n;folAnalise();}
+function folAnaSetCult(c){FOL_ANA_CULT=c;folAnalise();}
 
 // coleta as linhas de exportação com produtividade (mesma base da tabela, mas todas as safras da cultura de exportação)
 function folExpData(){
-  const graos=FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_EXP_CULT);
+  const graos=FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_ANA_CULT);
   const safras=[...new Set(graos.map(r=>r.safra))];
   const rows=[];
   safras.forEach(sf=>{
@@ -3276,7 +3284,7 @@ function folExpData(){
     [...new Set(gs.map(r=>r.th))].forEach(t=>{
       const rs=gs.filter(r=>r.th===t);
       const plantio=rs[0].plantio;
-      const pr=DPROD.filter(r=>r.talhao===t&amp;&amp;r.cultura===FOL_EXP_CULT&amp;&amp;r.ano_plantio===plantio&amp;&amp;r.prod_sc_ha!=null);
+      const pr=DPROD.filter(r=>r.talhao===t&amp;&amp;r.cultura===FOL_ANA_CULT&amp;&amp;r.ano_plantio===plantio&amp;&amp;r.prod_sc_ha!=null);
       const prod=pr.length?pr.reduce((s,r)=>s+r.prod_sc_ha,0)/pr.length:null;
       if(prod==null)return;
       const kgha=prod*SACO;
@@ -3294,15 +3302,30 @@ function folExpData(){
 function folAnalise(){
   const wrap=document.getElementById('folAnaBox');
   if(!wrap)return;
+  // cultura própria da análise (default: culturas com grão, começa na 1ª)
+  const cultsAna=[...new Set(FOLIAR.filter(r=>r.parte==='G').map(r=>r.cult))];
+  if(!FOL_ANA_CULT||!cultsAna.includes(FOL_ANA_CULT)) FOL_ANA_CULT=cultsAna[0]||'Soja';
   const rows=folExpData();
-  if(rows.length<2){wrap.innerHTML='<div class=&quot;fol-empty&quot;>Análise indisponível — é preciso ao menos 2 talhões com exportação e produtividade.</div>';return;}
+  if(rows.length<2){
+    const cultsB=[...new Set(FOLIAR.filter(r=>r.parte==='G').map(r=>r.cult))];
+    let hb='<div class=&quot;fol-ana-bar&quot;><div class=&quot;fol-ana-seg&quot;><span class=&quot;fol-ana-lbl&quot;>Cultura</span>';
+    cultsB.forEach(c=>{hb+=`<button class=&quot;${c===FOL_ANA_CULT?'on':''}&quot; onclick=&quot;folAnaSetCult('${c}')&quot;>${c}</button>`;});
+    hb+='</div></div>';
+    wrap.innerHTML=hb+`<div class=&quot;fol-empty&quot;>Sem dados suficientes de ${FOL_ANA_CULT} (é preciso ao menos 2 talhões com grão + produtividade). Troque a cultura acima.</div>`;
+    return;
+  }
   const NUT=FOL_ANA_NUT, NN=FOL_NOMES[NUT];
   const OXI={p:['P₂O₅',2.29],k:['K₂O',1.205]};
 
-  // seletor de nutriente
-  let h='<div class=&quot;fol-ana-nut&quot;>';
-  FOL_MACRO.forEach(k=>{h+=`<button class=&quot;${k===NUT?'on':''}&quot; onclick=&quot;folAnaSetNut('${k}')&quot;>${FOL_NOMES[k]}</button>`;});
+  // seletores: cultura + nutriente
+  const cultsAna2=[...new Set(FOLIAR.filter(r=>r.parte==='G').map(r=>r.cult))];
+  let h='<div class=&quot;fol-ana-bar&quot;>';
+  h+='<div class=&quot;fol-ana-seg&quot; style=&quot;margin-right:14px&quot;><span class=&quot;fol-ana-lbl&quot;>Cultura</span>';
+  cultsAna2.forEach(c=>{h+=`<button class=&quot;${c===FOL_ANA_CULT?'on':''}&quot; onclick=&quot;folAnaSetCult('${c}')&quot;>${c}</button>`;});
   h+='</div>';
+  h+='<div class=&quot;fol-ana-seg&quot;><span class=&quot;fol-ana-lbl&quot;>Nutriente</span>';
+  FOL_MACRO.forEach(k=>{h+=`<button class=&quot;${k===NUT?'on':''}&quot; onclick=&quot;folAnaSetNut('${k}')&quot;>${FOL_NOMES[k]}</button>`;});
+  h+='</div></div>';
 
   // ── 1) DISPERSÃO prod × exportação ──
   const pts=rows.filter(r=>r.exp[NUT]!=null).map((r,i)=>({x:r.prod,y:r.exp[NUT],th:r.th,safra:r.safra}));
