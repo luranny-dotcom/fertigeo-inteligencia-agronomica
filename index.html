@@ -1602,6 +1602,7 @@ table.dt td:first-child{text-align:left;background:#f8f8f8;color:#333}
 
 /* análise exportação × produtividade */
 
+.fol-ana-sel{font-family:inherit;font-size:11.5px;font-weight:700;color:#00313C;border:none;background:#fff;border-radius:6px;padding:6px 8px;cursor:pointer}
 .fol-ana-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
 .fol-ana-seg{display:inline-flex;align-items:center;gap:6px;background:#F2F1EC;border:1px solid #E7E5DD;border-radius:8px;padding:3px 3px 3px 10px}
 .fol-ana-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E8C82;margin-right:2px}
@@ -3270,14 +3271,17 @@ function folExport(){
 /* ═══ ANÁLISE EXPORTAÇÃO × PRODUTIVIDADE ═══ */
 let FOL_ANA_NUT='n';
 let FOL_ANA_CULT=null;
+let FOL_ANA_SAFRA='__ALL__';
 const FOL_ANA_CHARTS={};;
 function folAnaSetNut(n){FOL_ANA_NUT=n;folAnalise();}
-function folAnaSetCult(c){FOL_ANA_CULT=c;folAnalise();}
+function folAnaSetCult(c){FOL_ANA_CULT=c;FOL_ANA_SAFRA='__ALL__';folAnalise();}
+function folAnaSetSafra(sf){FOL_ANA_SAFRA=sf;folAnalise();}
 
 // coleta as linhas de exportação com produtividade (mesma base da tabela, mas todas as safras da cultura de exportação)
 function folExpData(){
   const graos=FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_ANA_CULT);
-  const safras=[...new Set(graos.map(r=>r.safra))];
+  let safras=[...new Set(graos.map(r=>r.safra))];
+  if(FOL_ANA_SAFRA!=='__ALL__') safras=safras.filter(sf=>sf===FOL_ANA_SAFRA);
   const rows=[];
   safras.forEach(sf=>{
     const gs=graos.filter(r=>r.safra===sf);
@@ -3323,9 +3327,24 @@ function folAnalise(){
   h+='<div class=&quot;fol-ana-seg&quot; style=&quot;margin-right:14px&quot;><span class=&quot;fol-ana-lbl&quot;>Cultura</span>';
   cultsAna2.forEach(c=>{h+=`<button class=&quot;${c===FOL_ANA_CULT?'on':''}&quot; onclick=&quot;folAnaSetCult('${c}')&quot;>${c}</button>`;});
   h+='</div>';
+  // seletor de safra (Todas + cada safra da cultura ativa)
+  const safrasAna=[...new Set(FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_ANA_CULT).map(r=>r.safra))].sort().reverse();
+  if(FOL_ANA_SAFRA!=='__ALL__'&amp;&amp;!safrasAna.includes(FOL_ANA_SAFRA))FOL_ANA_SAFRA='__ALL__';
+  h+='<div class=&quot;fol-ana-seg&quot; style=&quot;margin-right:14px&quot;><span class=&quot;fol-ana-lbl&quot;>Safra</span>';
+  h+=`<button class=&quot;${FOL_ANA_SAFRA==='__ALL__'?'on':''}&quot; onclick=&quot;folAnaSetSafra('__ALL__')&quot;>Todas</button>`;
+  safrasAna.forEach(sf=>{h+=`<button class=&quot;${sf===FOL_ANA_SAFRA?'on':''}&quot; onclick=&quot;folAnaSetSafra('${sf}')&quot;>${sf}</button>`;});
+  h+='</div>';
   h+='<div class=&quot;fol-ana-seg&quot;><span class=&quot;fol-ana-lbl&quot;>Nutriente</span>';
   FOL_MACRO.forEach(k=>{h+=`<button class=&quot;${k===NUT?'on':''}&quot; onclick=&quot;folAnaSetNut('${k}')&quot;>${FOL_NOMES[k]}</button>`;});
-  h+='</div></div>';
+  h+='</div>';
+  // seletor de safra (Todas + cada safra disponível da cultura)
+  const safrasSel=[...new Set(FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_ANA_CULT).map(r=>r.safra))].sort().reverse();
+  if(FOL_ANA_SAFRA!=='__ALL__'&amp;&amp;!safrasSel.includes(FOL_ANA_SAFRA)) FOL_ANA_SAFRA='__ALL__';
+  h+='<div class=&quot;fol-ana-seg&quot; style=&quot;padding-right:3px&quot;><span class=&quot;fol-ana-lbl&quot;>Safra</span>';
+  h+=`<select class=&quot;fol-ana-sel&quot; onchange=&quot;folAnaSetSafra(this.value)&quot;>`;
+  h+=`<option value=&quot;__ALL__&quot;${FOL_ANA_SAFRA==='__ALL__'?' selected':''}>Todas</option>`;
+  safrasSel.forEach(sf=>{h+=`<option value=&quot;${sf}&quot;${sf===FOL_ANA_SAFRA?' selected':''}>${sf}</option>`;});
+  h+='</select></div></div>';
 
   // ── 1) DISPERSÃO prod × exportação ──
   const pts=rows.filter(r=>r.exp[NUT]!=null).map((r,i)=>({x:r.prod,y:r.exp[NUT],th:r.th,safra:r.safra}));
