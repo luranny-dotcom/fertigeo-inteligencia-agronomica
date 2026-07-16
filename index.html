@@ -2691,7 +2691,7 @@ function initInteg(){
     <div class=&quot;filter-bar&quot;>
       <label>Cultura</label>
       <select id=&quot;folCult&quot; onchange=&quot;folSetCult(this.value)&quot;></select>
-      <label>Safra (folha)</label>
+      <label>Safra (diagnóstico foliar)</label>
       <select id=&quot;folAno&quot; onchange=&quot;folSetSafra(this.value)&quot;></select>
     </div>
 
@@ -2700,6 +2700,12 @@ function initInteg(){
     <div id=&quot;folDrisTable&quot; style=&quot;overflow-x:auto;margin-top:14px&quot;></div>
 
     <p class=&quot;sc&quot; style=&quot;margin-top:26px&quot;>📤 Exportação de nutrientes no grão</p>
+    <div class=&quot;filter-bar&quot; style=&quot;margin-bottom:12px&quot;>
+      <label>Cultura (grão)</label>
+      <select id=&quot;folExpCult&quot; onchange=&quot;folExpSetCult(this.value)&quot;></select>
+      <label>Safra</label>
+      <select id=&quot;folExpSafra&quot; onchange=&quot;folExpSetSafra(this.value)&quot;></select>
+    </div>
     <div id=&quot;folExportBox&quot; style=&quot;overflow-x:auto&quot;></div>
   </div>
 </div>
@@ -3090,12 +3096,15 @@ const FOL_NOMES={n:'N',p:'P',k:'K',ca:'Ca',mg:'Mg',s:'S',b:'B',cu:'Cu',fe:'Fe',m
 const SACO=60; // kg por saca (soja e milho)
 
 let FOL_CULT='Soja', FOL_SAFRA=null;
+let FOL_EXP_CULT='Soja', FOL_EXP_SAFRA='__ALL__';
 
 function folSafras(cult){
   return [...new Set(FOLIAR.filter(r=>r.parte==='F'&amp;&amp;r.cult===cult).map(r=>r.safra))].sort().reverse();
 }
 function folSetCult(c){FOL_CULT=c;const ss=folSafras(c);FOL_SAFRA=ss[0]||null;buildFoliar();}
 function folSetSafra(sf){FOL_SAFRA=sf;buildFoliar();}
+function folExpSetCult(c){FOL_EXP_CULT=c;FOL_EXP_SAFRA='__ALL__';folExport();}
+function folExpSetSafra(sf){FOL_EXP_SAFRA=sf;folExport();}
 
 function folColor(idx){
   const cols=['#00313C','#A2B34C','#3B8FA8','#C4A96A','#8B9C36','#5A6FC0','#B5651D','#4A554F'];
@@ -3188,19 +3197,32 @@ function folDiag(){
 /* ── EXPORTAÇÃO no grão (teor no grão × produtividade) ── */
 function folExport(){
   const box=document.getElementById('folExportBox');
-  // grão da cultura selecionada (todos os anos com grão)
-  const graos=FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_CULT);
-  const safrasG=[...new Set(graos.map(r=>r.safra))].sort().reverse();
-  if(!safrasG.length){box.innerHTML='<div class=&quot;fol-empty&quot;>Sem análise de grão para esta cultura.</div>';return;}
+  // popular seletor de cultura da exportação (culturas com grão)
+  const cults=[...new Set(FOLIAR.filter(r=>r.parte==='G').map(r=>r.cult))];
+  const cSel=document.getElementById('folExpCult');
+  if(cSel &amp;&amp; !cSel.dataset.done){
+    cSel.innerHTML=cults.map(c=>`<option value=&quot;${c}&quot;>${c}</option>`).join('');
+    cSel.value=FOL_EXP_CULT; cSel.dataset.done='1';
+  }
+  const graos=FOLIAR.filter(r=>r.parte==='G'&amp;&amp;r.cult===FOL_EXP_CULT);
+  const safras=[...new Set(graos.map(r=>r.safra))].sort().reverse();
+  // popular seletor de safra (Todas + cada safra)
+  const sSel=document.getElementById('folExpSafra');
+  if(sSel){
+    if(!safras.includes(FOL_EXP_SAFRA)&amp;&amp;FOL_EXP_SAFRA!=='__ALL__')FOL_EXP_SAFRA='__ALL__';
+    sSel.innerHTML=`<option value=&quot;__ALL__&quot;${FOL_EXP_SAFRA==='__ALL__'?' selected':''}>Todas as safras</option>`
+      +safras.map(sf=>`<option value=&quot;${sf}&quot;${sf===FOL_EXP_SAFRA?' selected':''}>${sf}</option>`).join('');
+  }
+  if(!safras.length){box.innerHTML='<div class=&quot;fol-empty&quot;>Sem análise de grão para esta cultura.</div>';return;}
+  const useSafras = FOL_EXP_SAFRA==='__ALL__'?safras:[FOL_EXP_SAFRA];
   let rows=[];
-  for(const sf of safrasG){
+  for(const sf of useSafras){
     const gs=graos.filter(r=>r.safra===sf);
     const tals=[...new Set(gs.map(r=>r.th))].sort();
     tals.forEach(t=>{
       const rs=gs.filter(r=>r.th===t);
-      const plantio=rs[0].plantio; // ano de plantio da safra
-      // produtividade média casando pelo ANO DE PLANTIO correto
-      const pr=DPROD.filter(r=>r.talhao===t&amp;&amp;r.cultura===FOL_CULT&amp;&amp;r.ano_plantio===plantio&amp;&amp;r.prod_sc_ha!=null);
+      const plantio=rs[0].plantio;
+      const pr=DPROD.filter(r=>r.talhao===t&amp;&amp;r.cultura===FOL_EXP_CULT&amp;&amp;r.ano_plantio===plantio&amp;&amp;r.prod_sc_ha!=null);
       const prod=pr.length?pr.reduce((s,r)=>s+r.prod_sc_ha,0)/pr.length:null;
       const kgha=prod!=null?prod*SACO:null;
       const teor={}; FOL_MACRO.forEach(k=>{
@@ -3211,29 +3233,19 @@ function folExport(){
       rows.push({safra:sf,th:t,prod,kgha,teor,exp,n:rs.length});
     });
   }
-  if(!rows.some(r=>r.prod!=null)){
-    box.innerHTML='<div class=&quot;fol-empty&quot;>Análise de grão disponível, mas sem produtividade correspondente para calcular exportação (ex.: safra em andamento).</div>';
-  }
   let h='<table class=&quot;fol-exp&quot;><thead><tr><th>Safra</th><th>Talhão</th><th>Prod.<br>(sc/ha)</th>';
   FOL_MACRO.forEach(k=>h+=`<th>${FOL_NOMES[k]}<br>kg/ha</th>`);
   h+='</tr></thead><tbody>';
   const ord=rows.slice().sort((a,b)=>b.safra.localeCompare(a.safra)||a.th.localeCompare(b.th));
-  let semProd=0;
   ord.forEach(r=>{
-    const temExp=r.exp&amp;&amp;Object.keys(r.exp).length;
-    if(!temExp&amp;&amp;r.prod==null)semProd++;
     h+=`<tr><td>${r.safra}</td><td class=&quot;fol-th&quot;>${r.th}</td><td>${r.prod!=null?r.prod.toFixed(0):'<span style=\'color:#B5651D\'>s/ dados</span>'}</td>`;
     FOL_MACRO.forEach(k=>h+=`<td>${(r.exp&amp;&amp;r.exp[k]!=null)?r.exp[k].toFixed(1):'—'}</td>`);
     h+='</tr>';
   });
   h+='</tbody></table>';
-  h+='<div class=&quot;fol-leg&quot;>Exportação (kg/ha) = teor no grão (g/kg) × produtividade (sc/ha × 60 kg) ÷ 1000. É o que saiu da área na colheita — a base para dimensionar a reposição.</div>';
+  h+='<div class=&quot;fol-leg&quot;>Exportação (kg/ha) = teor no grão (g/kg) × produtividade (sc/ha × 60 kg) ÷ 1000. É o que saiu da área na colheita — a base para dimensionar a reposição. &quot;s/ dados&quot; = análise de grão sem produtividade correspondente (ex.: safra em andamento).</div>';
   box.innerHTML=h;
 }
-
-
-
-// ===== QUÍMICA =====
 function populateTalSelect(selId, ano){
   const tals=[...new Set(getD(ano).map(d=>d.talhao).filter(Boolean))].sort();
   renderChips(selId, tals, buildQuim);
